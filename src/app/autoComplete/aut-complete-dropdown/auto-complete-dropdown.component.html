@@ -1,0 +1,11 @@
+<div *ngIf="choices.length > 0"
+     class="dropdown-menu"
+     [style.top.px]="position?.top"
+     [style.left.px]="position?.left">
+
+  <p-listbox [options]="choices"
+             (onChange)="selectChoice.next($event.value)">
+
+  </p-listbox>
+
+</div>
