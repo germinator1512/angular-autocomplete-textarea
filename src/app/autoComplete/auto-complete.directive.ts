@@ -15,6 +15,11 @@ import getCaretCoordinates from 'textarea-caret';
 // @ts-ignore
 import toPX from 'to-px';
 
+interface TriggerArea {
+  before: string;
+  word: string;
+  after: string;
+}
 
 @Directive({
   selector: 'textarea[appAutoComplete],input[type="text"][appAutoComplete]'
@@ -26,6 +31,12 @@ export class AutoCompleteDirective implements OnDestroy {
   @Input() choices: Array<string> = [];
   @Output() choiceSelected = new EventEmitter<string>();
   @Output() menuShown = new EventEmitter();
+
+  private words: TriggerArea = {
+    before: '',
+    word: '',
+    after: ''
+  }
 
   private menu: {
     component: ComponentRef<AutoCompleteDropdownComponent>;
@@ -40,17 +51,14 @@ export class AutoCompleteDirective implements OnDestroy {
 
   @HostListener('input', ['$event.target.value'])
   onChange(value: string) {
+    this.getTextValue(value);
 
-    const words = value.split(' ');
-
-    // TODO not use last word, use word where triggerCharacterPosition is at the moment
-    const last = words[words.length - 1];
-
+    const word = this.words.word;
     let choices: Set<string> = new Set();
 
-    if (last.length > 3) {
+    if (word.length > 3) {
       choices = new Set(this.choices
-        .filter(t => t.startsWith(last))
+        .filter(t => t.startsWith(word) && t.length > word.length)
         .sort()
         .slice(0, 5));
     }
@@ -58,6 +66,25 @@ export class AutoCompleteDirective implements OnDestroy {
     choices.size > 0 ? this.showMenu([...choices]) : this.hideMenu()
   }
 
+  private getTextValue(changeValue: string): void {
+    const triggerCharacterPosition = this.elm.nativeElement.selectionStart;
+    const allBeforeTriggerCharacter = changeValue.slice(0, triggerCharacterPosition)
+    const start = allBeforeTriggerCharacter.lastIndexOf(' ');
+
+    const wordBeforeTrigger = allBeforeTriggerCharacter
+      .slice(start === -1 ? 0 : start, allBeforeTriggerCharacter.length)
+      .trim();
+
+    const allBeforeTriggerWord = allBeforeTriggerCharacter.slice(0, allBeforeTriggerCharacter.length - wordBeforeTrigger.length);
+
+    const allAfterTriggerWord = changeValue.slice(triggerCharacterPosition, changeValue.length)
+
+    this.words = {
+      before: allBeforeTriggerWord,
+      word: wordBeforeTrigger,
+      after: allAfterTriggerWord
+    }
+  }
 
   private showMenu(choices: Array<string>) {
     if (!this.menu) {
@@ -96,21 +123,16 @@ export class AutoCompleteDirective implements OnDestroy {
 
   private onChoiceSelected(choice: string) {
     const textarea: HTMLTextAreaElement = this.elm.nativeElement;
-    const value: string = textarea.value;
 
-    const triggerCharacterPosition = this.menu!.triggerCharacterPosition;
-    const start = value.slice(0, triggerCharacterPosition);
+    textarea.value = this.words.before + choice + this.words.after;
+    console.log(this.words.before + choice)
+    console.log((this.words.before + choice).length)
 
-    const selectionStart = textarea.selectionStart;
-    const end = value.slice(selectionStart);
-
-    // TODO cut off value which triggered field to prevent duplicates
-    textarea.value = start + choice + end;
     textarea.dispatchEvent(new Event('input'));
     this.hideMenu();
-    const setCursorAt = (start + choice).length;
-    textarea.setSelectionRange(setCursorAt, setCursorAt);
+    const setCursorAt = (this.words.before + choice).length;
     textarea.focus();
+    textarea.setSelectionRange(setCursorAt, setCursorAt);
     this.choiceSelected.emit(choice);
   }
 
