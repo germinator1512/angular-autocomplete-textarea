@@ -1,9 +1,10 @@
 <div [formGroup]="form">
-
+<app-auto-complete-menu-wrapper>
     <textarea formControlName="textarea"
               appAutoComplete
               [minimalCharactersToTriggerAutoComplete]="4"
               [choices]="choices">
 
     </textarea>
+</app-auto-complete-menu-wrapper>
 </div>
