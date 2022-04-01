@@ -59,7 +59,6 @@ export class AutoCompleteDirective implements OnDestroy {
         .sort()
         .slice(0, 5));
     }
-
     choices.size > 0 ? this.showMenu([...choices]) : this.hideMenu()
   }
 
@@ -94,7 +93,6 @@ export class AutoCompleteDirective implements OnDestroy {
   private showMenu(choices: Array<string>) {
     if (!this.menu) {
       const menuFactory = this.componentFactoryResolver.resolveComponentFactory<AutoCompleteDropdownComponent>(AutoCompleteDropdownComponent);
-      let triggerCharacterPosition = this.elm.nativeElement.selectionStart;
 
       this.menu = this.viewContainerRef.createComponent(
         menuFactory,
@@ -102,22 +100,26 @@ export class AutoCompleteDirective implements OnDestroy {
         this.injector
       );
 
-      const lineHeight = AutoCompleteDirective.getLineHeight(this.elm.nativeElement);
-      const {top, left} = getCaretCoordinates(this.elm.nativeElement, triggerCharacterPosition);
 
-      this.menu.instance.position = {
-        top: top + lineHeight + 5,
-        left
-      };
-
-      this.menu.changeDetectorRef.detectChanges();
-      this.menu.instance.choices = choices;
       this.menu.instance.selectChoice.pipe(
         takeUntil(this.menuHidden$)
       ).subscribe((choice: string) => this.onChoiceSelected(choice));
 
       this.menuShown.emit();
     }
+
+    const lineHeight = AutoCompleteDirective.getLineHeight(this.elm.nativeElement);
+    let triggerCharacterPosition = this.elm.nativeElement.selectionStart;
+
+    const {top, left} = getCaretCoordinates(this.elm.nativeElement, triggerCharacterPosition);
+
+    this.menu.instance.position = {
+      top: top + lineHeight + 5,
+      left
+    };
+
+    this.menu.changeDetectorRef.detectChanges();
+    this.menu.instance.choices = choices;
   }
 
   private onChoiceSelected(choice: string) {
