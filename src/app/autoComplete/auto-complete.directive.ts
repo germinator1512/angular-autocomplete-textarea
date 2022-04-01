@@ -63,6 +63,14 @@ export class AutoCompleteDirective implements OnDestroy {
     choices.size > 0 ? this.showMenu([...choices]) : this.hideMenu()
   }
 
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.hideMenu();
+    const textarea: HTMLTextAreaElement = this.elm.nativeElement;
+    const setCursorAt = (this.values.before + this.values.word).length;
+    textarea.focus();
+    textarea.setSelectionRange(setCursorAt, setCursorAt);
+  }
+
   private setTextValue(changeValue: string): void {
     const triggerCharacterPosition = this.elm.nativeElement.selectionStart;
     const allBeforeTriggerCharacter = changeValue.slice(0, triggerCharacterPosition)
@@ -98,7 +106,7 @@ export class AutoCompleteDirective implements OnDestroy {
       const {top, left} = getCaretCoordinates(this.elm.nativeElement, triggerCharacterPosition);
 
       this.menu.instance.position = {
-        top: top + lineHeight,
+        top: top + lineHeight + 5,
         left
       };
 
@@ -113,17 +121,14 @@ export class AutoCompleteDirective implements OnDestroy {
   }
 
   private onChoiceSelected(choice: string) {
+    this.hideMenu();
+    const setCursorAt = (this.values.before + choice).length;
     const textarea: HTMLTextAreaElement = this.elm.nativeElement;
 
     textarea.value = this.values.before + choice + this.values.after;
     textarea.dispatchEvent(new Event('input'));
-
-    this.hideMenu();
-
-    const setCursorAt = (this.values.before + choice).length;
     textarea.focus();
     textarea.setSelectionRange(setCursorAt, setCursorAt);
-
     this.choiceSelected.emit(choice);
   }
 

@@ -1,4 +1,9 @@
-# AutocompleteInput
+# Inspired by 
+https://github.com/mattlewis92/angular-text-input-autocomplete
+
+![alt text](https://user-images.githubusercontent.com/65281921/161267976-26602b23-4603-4a18-bdd0-61e285672220.png)
+
+# Angular PrimeNg AutocompleteDirective for Textareas
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.1.
 
