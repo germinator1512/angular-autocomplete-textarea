@@ -29,6 +29,7 @@ export class AutoCompleteDirective implements OnDestroy {
   private menuHidden$ = new Subject();
 
   @Input() choices: Array<string> = [];
+  @Input() minimalCharactersToTriggerAutoComplete: number = 4;
   @Output() choiceSelected = new EventEmitter<string>();
   @Output() menuShown = new EventEmitter();
 
@@ -53,7 +54,7 @@ export class AutoCompleteDirective implements OnDestroy {
     const word = this.values.word;
     let choices: Set<string> = new Set();
 
-    if (word.length > 3) {
+    if (word.length >= this.minimalCharactersToTriggerAutoComplete) {
       choices = new Set(this.choices
         .filter(t => t.startsWith(word) && t.length > word.length)
         .sort()
