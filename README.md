@@ -1,4 +1,6 @@
-# Angular PrimeNg AutocompleteDirective for TextAreas
+# Angular AutocompleteDirective for TextAreas
+
+Demo https://angular-autocomplete-dropdown.web.app/
 
 A angular directive for adding autocomplete functionality to text areas, given a list of words.
 
@@ -12,7 +14,15 @@ A angular directive for adding autocomplete functionality to text areas, given a
 
 ![alt text](https://user-images.githubusercontent.com/65281921/161270557-e57537f4-f2b8-49fb-b5dd-bc9028379511.png)
 
+Dropdown menu is a Prime Ng ListBox, can be easily replaced with your own Component.
 
+
+```html
+  <p-listbox [options]="choices"
+             (onChange)="selectChoice.next($event.value)">
+
+  </p-listbox>
+```
 # Inspired by
 
 https://github.com/mattlewis92/angular-text-input-autocomplete

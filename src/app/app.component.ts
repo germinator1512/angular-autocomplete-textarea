@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
@@ -8,15 +7,5 @@ import {FormControl, FormGroup} from "@angular/forms";
 })
 export class AppComponent {
 
-  public choices: string[] = [];
-  public form: FormGroup;
-
-  constructor() {
-    this.form = new FormGroup({
-      textarea: new FormControl('')
-    })
-
-    this.choices = ['approaching', 'approximating', 'apprentice'];
-  }
-
+  public choices: string[] = ['approaching', 'approximating', 'apprentice', 'approach', 'appraisal'];
 }

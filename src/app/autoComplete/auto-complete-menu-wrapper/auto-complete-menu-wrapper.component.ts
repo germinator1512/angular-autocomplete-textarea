@@ -6,6 +6,7 @@ import {Component} from '@angular/core';
     `:host {
       position: relative;
       display: block;
+      z-index: 1000;
     }`
   ],
   template: '<ng-content></ng-content>'
